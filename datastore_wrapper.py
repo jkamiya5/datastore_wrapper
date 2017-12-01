@@ -40,3 +40,17 @@ class DatastoreWrapper(object):
     query_iter = query.fetch()
     result = list(query_iter)
     return result
+
+  def query_datastore_keys_only(self, datastore_kind_name=None, params=None):
+    if datastore_kind_name is None or datastore_kind_name == "":
+      return None
+
+    query = self.datastore_client.query(kind=datastore_kind_name)
+    query.keys_only()
+    
+    if params is not None and isinstance(params, dict):
+      for k, v in params.items():
+        query.add_filter(k, '=', v)
+
+    keys = list([entity.key for entity in query.fetch()])
+    return keys
